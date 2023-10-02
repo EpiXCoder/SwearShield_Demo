@@ -3,11 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <title>Profanity Filter Demo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #e66621;
+            margin-bottom: 40px;
+        }
+
+        #inputContainer {
+            display: flex;
+            flex-direction: column;
+            max-width: 300px;
+            margin: 0 auto;
+        }
+
+        #inputContainer input, #inputContainer textarea, #inputContainer button {
+            margin-bottom: 20px;
+        }
+
+        #comment {
+            resize: vertical;
+            height: 100px;
+        }
+
+        #comments p {
+            border: 1px solid #eee;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+    </style>
 </head>
 <body>
-    <div>
-        <input id="name" placeholder="Your Name">
-        <input id="comment" placeholder="Your Comment">
+    <h1>🛡️ Swear Shield</h1> 
+    <div id="inputContainer">
+        <input type="text" id="name" placeholder="Your Name">
+        <textarea id="comment" placeholder="Your Comment"></textarea>
         <button onclick="submitComment()">Submit</button>
     </div>
     <div id="comments"></div>
@@ -19,7 +55,23 @@
         function submitComment() {
             const name = document.getElementById('name').value;
             const comment = document.getElementById('comment').value;
-            socket.emit('new-comment', { name, comment });
+
+            // Check for profanity before submitting
+            fetch('/check-profanity', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ comment }),
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.hasProfanity) {
+                    alert('Warning! Your comment seems to contain profanity. It will be sanitized before it is posted');
+                }
+                // Now submit the comment as you normally would
+                socket.emit('new-comment', { name, comment });
+            });
         }
 
         socket.on('display-comment', (data) => {

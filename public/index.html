@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Profanity Filter Demo</title>
+</head>
+<body>
+    <div>
+        <input id="name" placeholder="Your Name">
+        <input id="comment" placeholder="Your Comment">
+        <button onclick="submitComment()">Submit</button>
+    </div>
+    <div id="comments"></div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+
+        function submitComment() {
+            const name = document.getElementById('name').value;
+            const comment = document.getElementById('comment').value;
+            socket.emit('new-comment', { name, comment });
+        }
+
+        socket.on('display-comment', (data) => {
+            const commentsDiv = document.getElementById('comments');
+            commentsDiv.innerHTML += `<p><strong>${data.name}:</strong> ${data.comment}</p>`;
+        });
+    </script>
+</body>
+</html>

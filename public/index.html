@@ -53,8 +53,17 @@
         const socket = io();
 
         function submitComment() {
-            const name = document.getElementById('name').value;
-            const comment = document.getElementById('comment').value;
+            let name = document.getElementById('name').value.trim();
+            const comment = document.getElementById('comment').value.trim();
+
+            if (!name) {
+                name = 'anonymous';
+            }
+
+            if (!comment) {
+                alert('Cannot post a blank comment!');
+                return;  // Exit the function early
+            }
 
             // Check for profanity before submitting
             fetch('/check-profanity', {
@@ -67,7 +76,7 @@
             .then(res => res.json())
             .then(data => {
                 if (data.hasProfanity) {
-                    alert('Warning! Your comment seems to contain profanity. It will be sanitized before it is posted');
+                    alert("Warning! Your comment seems to contain profanity. It will be sanitized before it's posted to the thread.");
                 }
                 // Now submit the comment as you normally would
                 socket.emit('new-comment', { name, comment });

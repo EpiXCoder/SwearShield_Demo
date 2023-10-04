@@ -1,4 +1,4 @@
-# SwearShield_Demo
+# Swear Shield Demo
 
 Demoing the NPM package created [here](https://github.com/EpiXCoder/ACS3310-SwearShield).
 
